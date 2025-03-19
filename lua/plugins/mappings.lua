@@ -8,6 +8,7 @@ return {
       mappings = {
         -- Modo normal
         n = {
+          ["gr"] = { "<cmd>Telescope lsp_references<cr>", desc = "Listar referências do LSP" },
           -- Mapear Ctrl + Z para desfazer
           ["<C-z>"] = { "u", desc = "Desfazer (Undo)" },
           -- Mapear Ctrl + Y para refazer
@@ -41,6 +42,7 @@ return {
           ["<Leader>wc"] = { ":close<CR>", desc = "Fechar janela atual" },
           -- Fechar todas as outras janelas, exceto a atual
           ["<Leader>wo"] = { ":only<CR>", desc = "Fechar outras janelas" },
+          ["gi"] = { "<cmd>lua vim.lsp.buf.implementation()<CR>", desc = "Ir para a implementação" },          
         },
         -- Modo de inserção
         i = {
@@ -76,13 +78,4 @@ return {
       },
     },
   }
-  -- {
-  --   "AstroNvim/astrolsp",
-  --   ---@type AstroLSPOpts
-  --   opts = {
-  --     mappings = {
-  --       -- Aqui você pode adicionar mapeamentos específicos do LSP, se necessário
-  --     },
-  --   },
-  -- },
 }

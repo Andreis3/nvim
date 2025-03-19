@@ -1,0 +1,52 @@
+return {
+  {
+    "crusj/structrue-go.nvim",
+    branch = "main",
+    ft = "go",
+    config = function()
+      require("structrue-go").setup({
+        show_others_method = true,
+        show_filename = true,
+        number = "no",
+        fold_open_icon = " ",
+        fold_close_icon = " ",
+        cursor_symbol_hl = "guibg=Gray guifg=White",
+        indent = "┠",
+        position = "botright",
+        symbol = {
+          filename = { hl = "guifg=#0096C7", icon = " " },
+          package = { hl = "guifg=#0096C7", icon = " " },
+          import = { hl = "guifg=#0096C7", icon = " ◈ " },
+          const = { hl = "guifg=#E44755", icon = " π " },
+          variable = { hl = "guifg=#52A5A2", icon = " ◈ " },
+          func = { hl = "guifg=#CEB996", icon = "  " },
+          interface = { hl = "guifg=#00B4D8", icon = "❙ " },
+          type = { hl = "guifg=#00B4D8", icon = "▱ " },
+          struct = { hl = "guifg=#00B4D8", icon = "❏ " },
+          field = { hl = "guifg=#CEB996", icon = " ▪ " },
+          method_current = { hl = "guifg=#CEB996", icon = " ƒ " },
+          method_others = { hl = "guifg=#CEB996", icon = "  " },
+        },
+        keymap = {
+          toggle = "<leader>m",
+          show_others_method_toggle = "H",
+          symbol_jump = "<CR>",
+          center_symbol = "\\f",
+          fold_toggle = "\\z",
+          refresh = "R",
+          preview_open = "P",
+          preview_close = "\\p",
+        },
+        fold = {
+          import = true,
+          const = false,
+          variable = false,
+          type = false,
+          interface = true,
+          func = false,
+          struct = true,
+        },
+      })
+    end,
+  },
+}

@@ -16,7 +16,7 @@ require("lazy").setup({
   { import = "plugins.gopls" }, -- Importa a configuração do gopls
 } --[[@as LazySpec]], {
   -- Configure any other `lazy.nvim` configuration options here
-  install = { colorscheme = { "astrotheme", "habamax", "catppuccin" } },
+  install = { colorscheme = { "astrotheme", "habamax", "catppuccin", "dracula" } },
   ui = { backdrop = 100 },
   performance = {
     rtp = {
