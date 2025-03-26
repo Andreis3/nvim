@@ -11,6 +11,17 @@ return {
       -- Adiciona ou sobrescreve apenas o buildFlags
       opts.config.gopls.settings.gopls.buildFlags = { "-tags", "integration unit" }
 
+      -- Aqui entra o filtro de diagnósticos
+      local orig_publish_diagnostics = vim.lsp.handlers["textDocument/publishDiagnostics"]
+      vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
+        if result and result.diagnostics then
+          result.diagnostics = vim.tbl_filter(function(diagnostic)
+            return not diagnostic.message:match("no go files to analyze")
+          end, result.diagnostics)
+        end
+        orig_publish_diagnostics(err, result, ctx, config)
+      end
+
       return opts
     end,
   },
