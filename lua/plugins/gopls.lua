@@ -9,7 +9,7 @@ return {
       opts.config.gopls.settings.gopls = opts.config.gopls.settings.gopls or {}
 
       -- Adiciona ou sobrescreve apenas o buildFlags
-      opts.config.gopls.settings.gopls.buildFlags = { "-tags", "integration unit" }
+      opts.config.gopls.settings.gopls.buildFlags = { "-tags", "integration unit wireinject" }
 
       -- Aqui entra o filtro de diagnósticos
       local orig_publish_diagnostics = vim.lsp.handlers["textDocument/publishDiagnostics"]

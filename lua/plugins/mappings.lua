@@ -42,7 +42,9 @@ return {
           ["<Leader>wc"] = { ":close<CR>", desc = "Fechar janela atual" },
           -- Fechar todas as outras janelas, exceto a atual
           ["<Leader>wo"] = { ":only<CR>", desc = "Fechar outras janelas" },
-          ["gi"] = { "<cmd>lua vim.lsp.buf.implementation()<CR>", desc = "Ir para a implementação" },          
+          ["gi"] = { "<cmd>lua vim.lsp.buf.implementation()<CR>", desc = "Ir para a implementação" },
+          ["<A-j>"] = { ":m .+1<CR>==", desc = "Mover linha para baixo" },
+          ["<A-k>"] = { ":m .-2<CR>==", desc = "Mover linha para cima" },         
         },
         -- Modo de inserção
         i = {
@@ -74,7 +76,11 @@ return {
           --   desc = "Fechar caixa de sugestão e manter modo de inserção",
           --   expr = true, -- Permite que a função retorne uma string de teclas
           -- },
-        }, 
+        },
+        v = {
+          ["<A-j>"] = { ":m '>+1<CR>gv=gv", desc = "Mover seleção para baixo" },
+          ["<A-k>"] = { ":m '<-2<CR>gv=gv", desc = "Mover seleção para cima" },
+        }
       },
     },
   }
