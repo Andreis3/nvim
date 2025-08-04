@@ -1,4 +1,4 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
 
 return {
   {
@@ -20,11 +20,24 @@ return {
           },
         },
         suggestion = {
-          enabled = false, -- Desabilita o texto sombreado
-          keymap = {
-            accept = false, -- Desabilita o mapeamento padrão para aceitar sugestões
-          },
+        enabled = true, -- Ativa sugestões inline
+        auto_trigger = true, -- Sugestão aparece enquanto digita
+        debounce = 75, -- (opcional) reduz o delay entre sugestões
+        keymap = {
+          accept = "<C-l>", -- (exemplo) aceitar sugestão com Ctrl+L
+          next = "<M-]>", -- (opcional) sugestão seguinte
+          prev = "<M-[>", -- (opcional) sugestão anterior
+          dismiss = "<C-]>",
         },
+      },
+        filetypes = {
+          -- Lista de tipos de arquivo onde o Copilot está ativo
+          ["*"] = true, -- Ativa para todos os tipos de arquivo
+          markdown = false, -- Desativa para markdown
+          help = false, -- Desativa para ajuda
+          gitcommit = false, -- Desativa para commits do Git
+        },
+        copilot_node_command = "node", -- Comando do Node.js usado pelo Copilot
       })
     end,
   },
