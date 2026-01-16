@@ -1,4 +1,4 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- if true then return {} end -- WARN: REMOVE THIS LINE +TO ACTIVATE THIS FILE
 
 return {
   {
@@ -44,17 +44,114 @@ return {
   {
     "CopilotC-Nvim/CopilotChat.nvim",
     dependencies = {
-      { "zbirenbaum/copilot.lua" }, -- Dependência do Copilot
-      { "nvim-lua/plenary.nvim" },  -- Dependência do Plenary
+      { "zbirenbaum/copilot.lua" },
+      { "nvim-lua/plenary.nvim" },
+    },
+    cmd = {
+      "CopilotChat",
+      "CopilotChatOpen",
+      "CopilotChatClose",
+      "CopilotChatToggle",
+      "CopilotChatExplain",
+      "CopilotChatReview",
+      "CopilotChatFix",
+      "CopilotChatOptimize",
+      "CopilotChatDocs",
+      "CopilotChatTests",
+      "CopilotChatCommit",
+      "CopilotChatModels",
+      "CopilotChatPrompts",
+      "CopilotChatRename",
     },
     opts = {
-      show_help = "yes", -- Mostra ajuda na janela de chat
-      debug = false,     -- Ative para depuração
+      show_help = "yes",
+      debug = false,
+
+      prompts = {
+        -- 1) Auditoria Clean Code (seleção)
+        CleanCodeAudit = {
+          prompt = table.concat({
+            "Observação: responda sempre em português brasileiro.",
+            "Faça uma auditoria de Clean Code no trecho selecionado.",
+            "Aponte:",
+            "1) nomes ruins / ambíguos e sugestões melhores",
+            "2) funções longas, responsabilidades misturadas (SRP)",
+            "3) duplicações, acoplamento e pontos de refatoração",
+            "4) melhorias de legibilidade (guard clauses, early returns, etc.)",
+            "5) sugestões concretas com exemplos curtos de código",
+            "Responda em bullets, com ações priorizadas (P0/P1/P2).",
+          }, "\n"),
+          selection = function(source)
+            local select = require("CopilotChat.select")
+            return select.visual(source)
+          end,
+        },
+
+        -- 2) Caça-bugs / falhas (seleção)
+        BugRiskAudit = {
+          prompt = table.concat({
+            "Observação: responda sempre em português brasileiro.",
+            "Analise o trecho selecionado e encontre falhas, bugs prováveis e riscos.",
+            "Procure por:",
+            "- null/nil e panics",
+            "- erros ignorados e tratamento fraco",
+            "- concorrência (race, deadlock, leak), uso de goroutines/channels",
+            "- validações ausentes, edge cases",
+            "- segurança (injeção, vazamento de dados, permissões)",
+            "- performance (alocações, loops, IO, N+1, etc.)",
+            "Para cada ponto: descreva o problema, impacto e correção sugerida.",
+          }, "\n"),
+          selection = function(source)
+            local select = require("CopilotChat.select")
+            return select.visual(source)
+          end,
+        },
+
+        -- 3) Arquivo inteiro: revisão arquitetural + robustez
+        FileReview = {
+          prompt = table.concat({
+            "#buffer:active",
+            "Observação: responda sempre em português brasileiro.",
+            "Faça review do arquivo inteiro com foco em robustez e qualidade.",
+            "Quero:",
+            "1) resumo do que o arquivo faz",
+            "2) riscos e falhas (P0/P1/P2)",
+            "3) oportunidades de refatoração (SRP, coesão, acoplamento)",
+            "4) melhorias de logs/observabilidade",
+            "5) sugestões de testes (o que testar e por quê).",
+            "Se possível, proponha um refactor incremental em passos.",
+          }, "\n"),
+          selection = function(source)
+            local select = require("CopilotChat.select")
+            return select.buffer(source)
+          end,
+        },
+
+        -- 4) Checklist de código (seleção): “o que eu revisaria num PR”
+        PRChecklist = {
+          prompt = table.concat({
+            "Observação: responda sempre em português brasileiro.",
+            "Aja como reviewer de PR extremamente criterioso.",
+            "Gere um checklist aplicado ao trecho selecionado, cobrindo:",
+            "- clareza de nomes e intenção",
+            "- estrutura e complexidade ciclomática",
+            "- erros e retornos",
+            "- validações e invariantes",
+            "- concorrência (se houver)",
+            "- segurança e dados sensíveis",
+            "- logs/metrics/tracing (quando aplicável)",
+            "- testes e casos de borda",
+            "Ao final, dê um parecer: APROVAR / PEDIR AJUSTES / BLOQUEAR e por quê.",
+          }, "\n"),
+          selection = function(source)
+            local select = require("CopilotChat.select")
+            return select.visual(source)
+          end,
+        },
+      },
     },
-    config = function()
-      require("CopilotChat").setup({
-        -- Configurações adicionais do CopilotChat, se necessário
-      })
+    config = function(_, opts)
+      require("CopilotChat").setup(opts)
     end,
   },
   {
@@ -73,21 +170,14 @@ return {
       },
       mappings = {
         n = {
-          -- Fechar o painel de sugestões com <Leader>cp (ou outro atalho)
           ["<Leader>cp"] = {
-            function()
-              require("copilot.suggestion").dismiss()
-            end,
-            desc = "Fechar painel de sugestões do Copilot",
+            function() require("copilot.suggestion").dismiss() end,
+            desc = "Fechar sugestão do Copilot",
           },
-          -- Abrir o chat do Copilot
           ["<Leader>cc"] = {
-            function()
-              require("CopilotChat").toggle()
-            end,
+            function() require("CopilotChat").toggle() end,
             desc = "Abrir/Fechar chat do Copilot",
           },
-          -- Perguntar algo no chat
           ["<Leader>cq"] = {
             function()
               local input = vim.fn.input("Pergunte ao Copilot: ")
@@ -95,14 +185,30 @@ return {
             end,
             desc = "Perguntar ao Copilot",
           },
+
+          -- ✅ Estilo do vídeo (normal mode)
+          ["<Leader>zc"] = { "<Cmd>CopilotChat<CR>", desc = "CopilotChat: abrir" },
+          ["<Leader>zm"] = { "<Cmd>CopilotChatModels<CR>", desc = "CopilotChat: modelos" },
+          ["<Leader>zp"] = { "<Cmd>CopilotChatPrompts<CR>", desc = "CopilotChat: prompts" },
+          ["<Leader>zM"] = { "<Cmd>CopilotChatCommit<CR>", desc = "CopilotChat: commit msg" },
+        },
+        v = {
+          -- ✅ Estilo do vídeo (visual mode - usa a seleção)
+          ["<Leader>ze"] = { "<Cmd>CopilotChatExplain<CR>", desc = "CopilotChat: explicar seleção" },
+          ["<Leader>zr"] = { "<Cmd>CopilotChatReview<CR>", desc = "CopilotChat: review seleção" },
+          ["<Leader>zf"] = { "<Cmd>CopilotChatFix<CR>", desc = "CopilotChat: corrigir seleção" },
+          ["<Leader>zo"] = { "<Cmd>CopilotChatOptimize<CR>", desc = "CopilotChat: otimizar seleção" },
+          ["<Leader>zd"] = { "<Cmd>CopilotChatDocs<CR>", desc = "CopilotChat: docs seleção" },
+          ["<Leader>zt"] = { "<Cmd>CopilotChatTests<CR>", desc = "CopilotChat: testes seleção" },
+          ["<Leader>zs"] = { "<Cmd>CopilotChatCommit<CR>", desc = "CopilotChat: commit (seleção)" },
+
+          -- Prompt custom igual ao vídeo
+          ["<Leader>zn"] = { "<Cmd>CopilotChatRename<CR>", desc = "CopilotChat: rename (seleção)" },
         },
         i = {
-          -- Fechar o painel de sugestões com <Leader>cp (ou outro atalho)
           ["<Leader>cp"] = {
-            function()
-              require("copilot.suggestion").dismiss()
-            end,
-            desc = "Fechar painel de sugestões do Copilot",
+            function() require("copilot.suggestion").dismiss() end,
+            desc = "Fechar sugestão do Copilot",
           },
         },
       },
@@ -122,7 +228,7 @@ return {
       local cmp = require("cmp")
       return {
         sources = cmp.config.sources({
-          { name = "copilot" }, -- Fonte do Copilot
+          -- { name = "copilot" }, -- Fonte do Copilot
           { name = "nvim_lsp" }, -- Fonte do LSP
           { name = "luasnip" }, -- Fonte de snippets do luasnip
           { name = "buffer" }, -- Fonte do buffer
